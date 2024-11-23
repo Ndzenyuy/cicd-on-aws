@@ -1,16 +1,21 @@
 version: 0.2
-#env: 
-  #parameter-store:
-    #CODEARTIFACT_AUTH_TOKEN: CODEARTIFACT_AUTH_TOKEN
+env: 
+  parameter-store:
+    dbhost: RDS-Endpoint
+    dbuser: RDSUSER
+    dbpass: RDSPASS
 phases:
   install:
     runtime-versions:
       java: corretto17
     commands:
       - cp ./settings.xml /root/.m2/settings.xml
-      - export CODEARTIFACT_AUTH_TOKEN=`aws codeartifact get-authorization-token --domain sparxinc --domain-owner 781655249241 --region us-east-1 --query authorizationToken --output text`
+      - export CODEARTIFACT_AUTH_TOKEN=`aws codeartifact get-authorization-token --domain ArtifactDomain --domain-owner ID --region REGION --query authorizationToken --output text`
   pre_build:
     commands:
+      - sed -i "s/jdbc.password=admin123/jdbc.password=$dbpass/" src/main/resources/application.properties
+      - sed -i "s/jdbc.username=admin/jdbc.username=$dbuser/" src/main/resources/application.properties
+      - sed -i "s/db01:3306/$dbhost:3306/" src/main/resources/application.properties
       - apt-get update
       - apt-get install -y jq 
       - wget https://dlcdn.apache.org/maven/maven-3/3.9.4/binaries/apache-maven-3.9.4-bin.tar.gz
@@ -21,5 +26,5 @@ phases:
       - mvn clean install -DskipTests
 artifacts:
   files:
-     - target/**/*.war
-  discard-paths: yes
+     - '**/*'
+  base-directory: 'target/vprofile-v2'
