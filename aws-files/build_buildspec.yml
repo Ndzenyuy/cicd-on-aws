@@ -26,5 +26,5 @@ phases:
       - mvn clean install -DskipTests
 artifacts:
   files:
-     - target/**/*.war
+     - '**/*'
   base-directory: 'target/java_app-v2'
