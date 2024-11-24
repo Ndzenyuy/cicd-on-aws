@@ -27,4 +27,4 @@ phases:
 artifacts:
   files:
      - target/**/*.war
-  discard-paths: yes
+  base-directory: 'target/java_app-v2'
